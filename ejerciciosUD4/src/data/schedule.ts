@@ -1,7 +1,8 @@
 // src/data/mockData.js
 
 import { reactive } from 'vue';
-import { BloqueHorario, Aula } from '../types/schedule';
+import type { Aula } from '@/types/schedule';
+import type { BloqueHorario } from '@/types/schedule';
 
 export const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 export const BLOQUES_HORARIOS = ["8:00-9:00", "9:00-10:00", "10:00-11:00", "11:00-12:00"];

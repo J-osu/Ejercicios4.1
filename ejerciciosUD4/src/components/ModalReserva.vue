@@ -37,7 +37,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { Asignatura, BloqueHorario } from '@/types/schedule';
+import type { Asignatura } from '@/types/schedule';
+import type { BloqueHorario } from '@/types/schedule';
 
 // Definición de Props
 const props = defineProps<{
