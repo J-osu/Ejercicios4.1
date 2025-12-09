@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import JuegoCartasView from '@/views/JuegoCartasView.vue'
+import GestorHorarios from '@/views/GestorHorarios.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/',
       name: 'juegoCartas',
       component: JuegoCartasView,
+    },
+        {
+      path: '/gestor',
+      name: 'gestor',
+      component: GestorHorarios,
     },
   ],
 })

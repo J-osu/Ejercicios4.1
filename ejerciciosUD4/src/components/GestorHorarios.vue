@@ -1,10 +1,10 @@
 <template>
   <div class="gestor-container">
-    <h2>🏫 Gestión de Horarios de Aulas</h2>
+    <h2>Gestión de Horarios</h2>
 
     <div class="classroom-selector">
       <label for="classroom-select">Seleccionar Aula:</label>
-      <select id="classroom-select" v-model="selectedClassroomId">
+      <select id="classroom-select" v-model="idAulaSeleccionada">
         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
           {{ aula.nombre }}
         </option>
@@ -22,23 +22,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(daySchedule, dayIndex) in currentHorario" :key="dayIndex">
+          <tr v-for="(horarioDia, indiceDia) in horarioActual" :key="indiceDia">
             <td class="day-header">
-              **{{ DIAS_SEMANA[dayIndex] }}**
+              **{{ DIAS_SEMANA[indiceDia] }}**
             </td>
 
             <td
-              v-for="(slotData, slotIndex) in daySchedule"
-              :key="slotIndex"
-              :class="['schedule-slot', { 'occupied': !!slotData, 'free': !slotData }]"
-              @click="openModal(dayIndex, slotIndex, slotData)"
+              v-for="(datosBloque, indiceBloque) in horarioDia"
+              :key="indiceBloque"
+              :class="['schedule-slot', { 'occupied': !!datosBloque, 'free': !datosBloque }]"
+              @click="abrirModal(indiceDia, indiceBloque, datosBloque)"
             >
-              <template v-if="slotData">
-                <span class="subject">{{ slotData.nombre }}</span>
+              <template v-if="datosBloque">
+                <span class="subject">{{ datosBloque.nombre }}</span>
                 <br>
-                <small class="teacher">{{ slotData.profesor }}</small>
+                <small class="teacher">{{ datosBloque.profesor }}</small>
                 <br>
-                <small class="group">({{ slotData.grupo }})</small>
+                <small class="group">({{ datosBloque.grupo }})</small>
               </template>
               <template v-else>
                 Libre
@@ -50,13 +50,13 @@
     </div>
 
     <ModalReserva
-      :is-visible="isModalVisible"
-      :reserva="editingSlot?.reserva || null"
-      :dia-nombre="DIAS_SEMANA[editingSlot?.dayIndex || 0]"
-      :bloque-hora="BLOQUES_HORARIOS[editingSlot?.slotIndex || 0]"
-      @save="handleSave"
-      @delete="handleDelete"
-      @close="closeModal"
+      :es-visible="esModalVisible"
+      :reserva="slotEditando?.reserva || null"
+      :nombre-dia="DIAS_SEMANA[slotEditando?.indiceDia || 0]"
+      :hora-bloque="BLOQUES_HORARIOS[slotEditando?.indiceBloque || 0]"
+      @guardar="manejarGuardar"
+      @eliminar="manejarEliminar"
+      @cerrar="cerrarModal"
     />
   </div>
 </template>
@@ -67,96 +67,62 @@ import { Aula, BloqueHorario, Asignatura } from '@/types/schedule';
 import { aulas, DIAS_SEMANA, BLOQUES_HORARIOS } from '@/data/schedule';
 import ModalReserva from './ModalReserva.vue';
 
-// --- Estado ---
-const selectedClassroomId = ref<string>('');
-const isModalVisible = ref(false);
+const idAulaSeleccionada = ref<string>('');
+const esModalVisible = ref(false);
 
-interface EditingSlot {
-    dayIndex: number;
-    slotIndex: number;
+interface SlotEditando {
+    indiceDia: number;
+    indiceBloque: number;
     reserva: BloqueHorario;
 }
-const editingSlot = ref<EditingSlot | null>(null);
+const slotEditando = ref<SlotEditando | null>(null);
 
-// --- Propiedades Computadas ---
-/**
- * Devuelve el objeto Aula actualmente seleccionado.
- */
-const currentAula = computed<Aula | undefined>(() => {
-  return aulas.find(a => a.id === selectedClassroomId.value);
+const aulaActual = computed<Aula | undefined>(() => {
+  return aulas.find(a => a.id === idAulaSeleccionada.value);
 });
 
-/**
- * Devuelve la matriz de horario del aula actual (HorarioAula).
- */
-const currentHorario = computed<BloqueHorario[][]>(() => {
-  return currentAula.value?.horario || [];
+const horarioActual = computed<BloqueHorario[][]>(() => {
+  return aulaActual.value?.horario || [];
 });
 
-// --- Métodos de Gestión ---
-
-/**
- * Muestra el modal para Crear o Modificar.
- * @param dayIndex Índice de la fila (Día).
- * @param slotIndex Índice de la columna (Bloque).
- * @param slotData Datos de la reserva o null.
- */
-const openModal = (dayIndex: number, slotIndex: number, slotData: BloqueHorario) => {
-    // 1. Guarda las coordenadas y datos del bloque para el CRUD.
-    editingSlot.value = { dayIndex, slotIndex, reserva: slotData };
-    // 2. Muestra el modal.
-    isModalVisible.value = true;
+const abrirModal = (indiceDia: number, indiceBloque: number, datosBloque: BloqueHorario) => {
+    slotEditando.value = { indiceDia, indiceBloque, reserva: datosBloque };
+    esModalVisible.value = true;
 };
 
-const closeModal = () => {
-    isModalVisible.value = false;
-    editingSlot.value = null;
+const cerrarModal = () => {
+    esModalVisible.value = false;
+    slotEditando.value = null;
 };
 
-/**
- * Maneja la acción 'save' del modal (Crear/Actualizar).
- * Modifica directamente la matriz del horario.
- */
-const handleSave = (reservaData: Asignatura) => {
-    if (!editingSlot.value || !currentAula.value) return;
+const manejarGuardar = (datosReserva: Asignatura) => {
+    if (!slotEditando.value || !aulaActual.value) return;
 
-    const { dayIndex, slotIndex } = editingSlot.value;
+    const { indiceDia, indiceBloque } = slotEditando.value;
 
-    // Modificar la matriz del aula actual
-    const horario = currentAula.value.horario;
+    const horario = aulaActual.value.horario;
+    horario[indiceDia][indiceBloque] = datosReserva;
 
-    // Actualizar la celda de la matriz (la reactividad de Vue 3 maneja esto bien)
-    horario[dayIndex][slotIndex] = reservaData;
-
-    closeModal();
+    cerrarModal();
 };
 
-/**
- * Maneja la acción 'delete' del modal (Eliminar).
- * Asigna 'null' al bloque de la matriz.
- */
-const handleDelete = () => {
-    if (!editingSlot.value || !currentAula.value) return;
+const manejarEliminar = () => {
+    if (!slotEditando.value || !aulaActual.value) return;
 
-    const { dayIndex, slotIndex } = editingSlot.value;
+    const { indiceDia, indiceBloque } = slotEditando.value;
+    aulaActual.value.horario[indiceDia][indiceBloque] = null;
 
-    // Asignar null a la celda para liberar el bloque
-    currentAula.value.horario[dayIndex][slotIndex] = null;
-
-    closeModal();
+    cerrarModal();
 };
 
-// --- Ciclo de Vida ---
 onMounted(() => {
-    // Establecer la primera aula como seleccionada al cargar la app
     if (aulas.length > 0) {
-        selectedClassroomId.value = aulas[0].id;
+        idAulaSeleccionada.value = aulas[0].id;
     }
 });
 </script>
 
 <style scoped>
-/* Estilos generales */
 .gestor-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 20px;
@@ -175,7 +141,6 @@ onMounted(() => {
     margin-left: 10px;
 }
 
-/* Estilos de la Cuadrícula (Matriz) */
 .schedule-grid {
   overflow-x: auto;
   border: 1px solid #ddd;
@@ -217,14 +182,13 @@ onMounted(() => {
   opacity: 0.9;
 }
 
-/* Estilos de estado */
 .occupied {
-  background-color: #ffe0b2; /* Naranja pastel */
+  background-color: #ffe0b2;
   color: #333;
 }
 
 .free {
-  background-color: #e8f5e9; /* Verde pastel */
+  background-color: #e8f5e9;
   color: #6a6a6a;
   font-style: italic;
   font-weight: 500;

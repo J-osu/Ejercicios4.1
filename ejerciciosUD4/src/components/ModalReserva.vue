@@ -1,32 +1,32 @@
 <template>
-  <div v-if="isVisible" class="modal-overlay" @click.self="$emit('close')">
+  <div v-if="esVisible" class="modal-overlay" @click.self="$emit('cerrar')">
     <div class="modal-content">
-      ### 📝 {{ isEditing ? 'Editar Reserva' : 'Nueva Reserva' }}
+      {{ estaEditando ? 'Editar Reserva' : 'Nueva Reserva' }}
 
       <p>
-        **Bloque:** {{ diaNombre }} ({{ bloqueHora }})
+        **Bloque:** {{ nombreDia }} ({{ horaBloque }})
       </p>
 
-      <form @submit.prevent="saveReservation">
+      <form @submit.prevent="guardarReserva">
         <label for="asignatura">Asignatura:</label>
-        <input id="asignatura" type="text" v-model="localReserva.nombre" required>
+        <input id="asignatura" type="text" v-model="reservaLocal.nombre" required>
 
         <label for="profesor">Profesor:</label>
-        <input id="profesor" type="text" v-model="localReserva.profesor" required>
+        <input id="profesor" type="text" v-model="reservaLocal.profesor" required>
 
         <label for="grupo">Grupo/Curso:</label>
-        <input id="grupo" type="text" v-model="localReserva.grupo" required>
+        <input id="grupo" type="text" v-model="reservaLocal.grupo" required>
 
         <div class="modal-actions">
           <button type="submit" class="btn-primary">
-            {{ isEditing ? 'Guardar Cambios' : 'Crear Reserva' }}
+            {{ estaEditando ? 'Guardar Cambios' : 'Crear Reserva' }}
           </button>
 
-          <button v-if="isEditing" type="button" @click="deleteReservation" class="btn-danger">
+          <button v-if="estaEditando" type="button" @click="eliminarReserva" class="btn-danger">
             Eliminar Reserva
           </button>
 
-          <button type="button" @click="$emit('close')" class="btn-secondary">
+          <button type="button" @click="$emit('cerrar')" class="btn-secondary">
             Cancelar
           </button>
         </div>
@@ -40,49 +40,37 @@ import { ref, watch, computed } from 'vue';
 import type { Asignatura } from '@/types/schedule';
 import type { BloqueHorario } from '@/types/schedule';
 
-// Definición de Props
 const props = defineProps<{
-  isVisible: boolean;
+  esVisible: boolean;
   reserva: BloqueHorario;
-  diaNombre: string;
-  bloqueHora: string;
+  nombreDia: string;
+  horaBloque: string;
 }>();
 
-// Definición de Eventos
-const emit = defineEmits(['save', 'delete', 'close']);
-
-// Estado local del formulario
-const emptyReservation: Asignatura = { nombre: '', profesor: '', grupo: '' };
-const localReserva = ref<Asignatura>({ ...emptyReservation });
-
-// Propiedad computada para saber si estamos editando
-const isEditing = computed(() => !!props.reserva);
-
-// Sincronizar la prop 'reserva' con el estado local del formulario
-watch(() => props.reserva, (newVal) => {
-  if (newVal) {
-    // Si hay reserva (edición), clonar los datos
-    localReserva.value = { ...newVal };
+const emit = defineEmits(['guardar', 'eliminar', 'cerrar']);
+const reservaVacia: Asignatura = { nombre: '', profesor: '', grupo: '' };
+const reservaLocal = ref<Asignatura>({ ...reservaVacia });
+const estaEditando = computed(() => !!props.reserva);
+watch(() => props.reserva, (nuevoValor) => {
+  if (nuevoValor) {
+    reservaLocal.value = { ...nuevoValor };
   } else {
-    // Si no hay reserva (creación), resetear el formulario
-    localReserva.value = { ...emptyReservation };
+    reservaLocal.value = { ...reservaVacia };
   }
 }, { immediate: true });
 
-// Métodos
-const saveReservation = () => {
-  emit('save', localReserva.value);
+const guardarReserva = () => {
+  emit('guardar', reservaLocal.value);
 };
 
-const deleteReservation = () => {
+const eliminarReserva = () => {
   if (confirm('¿Estás seguro de que deseas eliminar esta reserva?')) {
-    emit('delete');
+    emit('eliminar');
   }
 };
 </script>
 
 <style scoped>
-/* Estilos básicos para el Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -97,6 +85,7 @@ const deleteReservation = () => {
 }
 
 .modal-content {
+  color: black;
   background: white;
   padding: 30px;
   border-radius: 8px;
