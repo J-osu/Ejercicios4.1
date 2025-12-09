@@ -14,6 +14,8 @@ const changeLanguage = (event: Event) => {
   const newLang = (event.target as HTMLSelectElement).value as IAppSettings['language'];
   configService.setLanguage(newLang);
 };
+
+// ... Faltan los handlers para fontSize y fontFamily
 </script>
 
 <template>
@@ -21,13 +23,13 @@ const changeLanguage = (event: Event) => {
     <h3>Panel de Configuración</h3>
 
     <label>Tema:</label>
-    <select :value="settings.value.theme" @change="changeTheme">
+    <select :value="settings.value?.theme" @change="changeTheme">
       <option value="light">Claro</option>
       <option value="dark">Oscuro</option>
     </select>
-    
+    <br></br>
     <label>Idioma:</label>
-    <select :value="settings.value.language" @change="changeLanguage">
+    <select :value="settings.value?.language" @change="changeLanguage">
       <option value="es">Español</option>
       <option value="en">Inglés</option>
       <option value="fr">Francés</option>

@@ -1,54 +1,81 @@
-// tests/unit/AppConfig.spec.ts
-import { describe, it, expect, vi } from 'vitest';
-import { AppConfig } from '@/services/AppConfig'; // Ajusta la ruta
+// src/tests/AppConfig.spec.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AppConfig } from '@/services/AppConfig';
+
+const localStorageMock = (function () {
+  let store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+  };
+})();
+
+Object.defineProperty(global, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
 
 describe('AppConfig (Singleton Pattern)', () => {
 
-  // Limpiamos el estado entre tests para asegurar el patrón Singleton
   beforeEach(() => {
-    // Forzamos la reinicialización de la instancia del Singleton
+    localStorageMock.clear();
+    localStorageMock.setItem.mockClear(); 
+    localStorageMock.getItem.mockClear();
+
     (AppConfig as any).instance = undefined;
-    localStorage.clear();
   });
 
   it('Test de Unicidad (Singleton)', () => {
-    // 1. Llamar a getInstance dos veces. [cite: 827]
     const instancia1 = AppConfig.getInstance();
     const instancia2 = AppConfig.getInstance();
-
-    // 2. Ambas referencias deben apuntar al mismo objeto. [cite: 828]
     expect(instancia1).toBe(instancia2);
   });
 
   it('Test de Modificación de Estado y Reactividad', () => {
     const configService = AppConfig.getInstance();
     const settings = configService.getSettings();
-
-    // Estado inicial (por defecto)
+    
     expect(settings.value.theme).toBe('light');
 
-    // Cambiar el tema. [cite: 829]
     configService.setTheme('dark');
 
-    // Verificar el cambio. [cite: 829]
     expect(settings.value.theme).toBe('dark');
   });
 
   it('Test de Persistencia con localStorage', () => {
-    // Espiar localStorage.setItem antes de usar el setter. [cite: 830]
-    const setItemSpy = vi.spyOn(localStorage, 'setItem');
-
+    
     const configService = AppConfig.getInstance();
 
-    // Llamar al setter. [cite: 830]
     configService.setLanguage('fr');
 
-    // Verificar que localStorage.setItem fue llamado. [cite: 831]
+    const setItemSpy = localStorageMock.setItem; 
+
     expect(setItemSpy).toHaveBeenCalled();
-    // Verificar que los argumentos son correctos. [cite: 831]
     expect(setItemSpy).toHaveBeenCalledWith(
       'app-config',
       expect.stringContaining('"language":"fr"')
     );
+  });
+  
+  it('Test 4: Carga de estado desde localStorage', () => {
+    localStorageMock.getItem.mockReturnValueOnce(
+        JSON.stringify({ theme: 'dark', language: 'en', fontSize: 'small', fontFamily: 'Arial' })
+    );
+
+    const configService = AppConfig.getInstance();
+    const settings = configService.getSettings();
+
+    expect(localStorageMock.getItem).toHaveBeenCalledWith('app-config');
+
+    expect(settings.value.theme).toBe('dark');
+    expect(settings.value.language).toBe('en');
   });
 });
