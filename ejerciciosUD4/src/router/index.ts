@@ -3,6 +3,7 @@ import JuegoCartasView from '@/views/JuegoCartasView.vue'
 import GestorHorarios from '@/views/GestorHorarios.vue'
 import Configuracion from '@/views/ConfiguracionVista.vue'
 import NotificationView from '@/views/NotificationView.vue'
+import SalaCineView from '@/views/SalaCineView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/notification',
       name: 'notification',
       component: NotificationView
+    },
+    {
+      path: '/sala-cine',
+      name: 'salaCine',
+      component: SalaCineView,
     }
 
   ],

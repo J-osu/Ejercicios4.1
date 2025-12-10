@@ -18,10 +18,10 @@ export default defineUserConfig({
       {
         text: 'Lógica del Juego y Reglas',
         children: [
-          '/guia/arquitectura.md',
-          '/guia/clases-y-datos.md',
-          '/guia/estado-y-composable.md',
-          '/guia/reglas-y-flujo.md'
+          '/guia/carta/arquitectura.md',
+          '/guia/carta/clases-y-datos.md',
+          '/guia/carta/estado-y-composable.md',
+          '/guia/carta/reglas-y-flujo.md'
         ]
       },
             {
@@ -32,6 +32,15 @@ export default defineUserConfig({
           '/guia/ejercicio4-2.md'
         ]
       },
+      {
+        text: 'Lógica de la compra de entradas de cine',
+        children: [
+          '/guia/cine/tipos-sala.md',
+          '/guia/cine/logica-interaccion.md',
+          '/guia/cine/estilos-grid.md',
+          '/guia/cine/componente-sala.md'
+        ]
+      }
 
     ],
     nav: [

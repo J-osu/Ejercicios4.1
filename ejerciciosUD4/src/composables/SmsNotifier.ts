@@ -1,4 +1,4 @@
-import type { INotifier } from '../types/INotifier';
+import type { INotifier } from '../interface/INotifier';
 
 export class SmsNotifier implements INotifier {
     send(message: string): void {

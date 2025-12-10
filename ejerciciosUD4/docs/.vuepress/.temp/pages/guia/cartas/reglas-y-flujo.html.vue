@@ -1,8 +1,8 @@
 <template><div><h1 id="reglas-y-flujo-del-juego-el-ultimo-descarte" tabindex="-1"><a class="header-anchor" href="#reglas-y-flujo-del-juego-el-ultimo-descarte"><span>Reglas y Flujo del Juego: &quot;El Último Descarte&quot;</span></a></h1>
 <p>Esta página explica el objetivo y las reglas de interacción del juego, que es la simulación del uso de estructuras de datos Pila (Stack).</p>
-<p>🎯 Objetivo del Juego</p>
+<p><strong>Objetivo del Juego</strong></p>
 <p>Quedarse sin cartas en la mano.</p>
-<p>🕹️ Flujo del Turno</p>
+<p><strong>Flujo del Turno</strong></p>
 <p>El juego comienza con el jugador con 7 cartas y una carta inicial en la Pila de Descarte.</p>
 <h2 id="_1-jugar-una-carta" tabindex="-1"><a class="header-anchor" href="#_1-jugar-una-carta"><span>1. Jugar una Carta</span></a></h2>
 <p>El jugador puede jugar una carta de su mano si se cumple la Regla de Coincidencia:</p>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppConfig } from '@/services/AppConfig';
-import type { IAppSettings } from '@/types/IAppSettings';
+import type { IAppSettings } from '@/interface/IAppSettings';
 
 const configService = AppConfig.getInstance();
 const settings = configService.getSettings();

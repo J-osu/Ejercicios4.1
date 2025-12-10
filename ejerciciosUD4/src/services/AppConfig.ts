@@ -1,5 +1,5 @@
 import { ref, readonly, type DeepReadonly, type Ref } from 'vue';
-import type { IAppSettings } from '@/types/IAppSettings';
+import type { IAppSettings } from '@/interface/IAppSettings';
 
 export class AppConfig {
   private static instance: AppConfig;

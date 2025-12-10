@@ -1,4 +1,4 @@
-import type { INotifier } from '../types/INotifier';
+import type { INotifier } from '../interface/INotifier';
 import { EmailNotifier } from './EmailNotifier';
 import { SmsNotifier } from './SmsNotifier';
 import { PushNotifier } from './PushNotifier';
