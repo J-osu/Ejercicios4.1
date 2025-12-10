@@ -1,38 +1,37 @@
-# Ejercicio 3: Gestor Interactivo de Horarios de Aulas
+# Ejercicio 3: Gestion de Horarios de Aulas
 
-El **Ejercicio 3** se centra en el manejo de estructuras de datos para gestionar datos tabulares, utilizando **matrices (arrays bidimensionales)** en TypeScript y Vue.js.
+Este ejercicio se basa en usar **matrices** (tablas de datos) para organizar los horarios de varias aulas.
 
-## Arquitectura y Diseño
+## Arquitectura y Datos
 
-El sistema utiliza la **Composition API** para centralizar la lógica de negocio y el estado reactivo, desacoplando la gestión de datos de la interfaz visual.
+La clave es que el horario no es una lista, es una **matriz bidimensional**. La aplicacion usa la **Composition API** de Vue para que todos los datos sean **reactivos** (si cambian, la tabla se actualiza sola).
 
-### Componentes y Módulos Principales
+### Tipos de Datos Clave (`schedule.ts`)
 
-| Módulo/Archivo | Tipo | Propósito |
+| Tipo | Descripcion | Codigo Clave |
 | :--- | :--- | :--- |
-| `src/types/schedule.ts` | **Types/Interfaces** | Define la estructura de la reserva (`IAsignatura`) y el modelo principal: la matriz `HorarioAula`. |
-| `GestorHorarios.vue` | **Componente (UI/Lógica)** | Contiene el estado reactivo (`horarios`) y la lógica **CRUD** (Crear, Leer, Actualizar, Eliminar) que manipula directamente la matriz. |
-| `HorarioModal.vue` | **Componente (UI)** | (Asumido) Recibe la posición `[día][hora]` y maneja el formulario para modificar una reserva. |
+| `Asignatura` | La reserva, con nombre, profesor y grupo. | `export interface Asignatura { ... }` |
+| `BloqueHorario` | La celda de la tabla. Puede ser una `Asignatura` o **`null`** (libre). | `export type BloqueHorario = Asignatura | null;` |
+| `HorarioAula` | La matriz completa de un aula (Filas x Columnas). | `export type HorarioAula = BloqueHorario[][];` |
+| `Aula` | Combina el `id`, `nombre` y su matriz de `horario`. | `export interface Aula { ... }` |
 
-## Estructura de Datos: La Matriz
+## Flujo: Modificar la Matriz
 
-La clave de la arquitectura es el uso de la matriz bidimensional para representar la disponibilidad horaria de un aula.
+El componente `GestorHorarios.vue` maneja la lista de aulas y usa la posicion (indiceDia, indiceBloque) para saber exactamente que celda modificar.
 
-* **`BloqueHorario`**: Tipo de dato que puede ser una reserva (`IAsignatura`) o `null` (si está libre).
-* **`HorarioAula`**: La matriz principal, definida como:
+### Funciones de Uso (CRUD)
 
-    $$\text{BloqueHorario}[\text{Días}][\text{Horas}]$$
+1.  **Pinchar y Abrir Modal**: El componente llama a **`abrirModal(indiceDia, indiceBloque, datosBloque)`** para abrir la ventana de edicion (`ModalReserva.vue`).
 
-* **`HorariosData`**: Un mapa que asocia el nombre de un aula a su respectiva matriz `HorarioAula`.
+2.  **Guardar Reserva**: Esta funcion es la que actualiza la matriz. Se accede al aula, y luego a la posicion exacta para asignar el nuevo objeto de reserva.
 
-
-
-## Flujo de Gestión (CRUD)
-
-El componente `GestorHorarios.vue` realiza todas las operaciones modificando la matriz en memoria, asegurando que la interfaz se actualice automáticamente gracias a la reactividad de Vue.
-
-1.  **Leer (Read)**: Se usa una propiedad `computed` para acceder al array: `horarios.value[aulaSeleccionada]`.
-2.  **Crear/Actualizar (Create/Update)**: La función `guardarReserva` actualiza un índice específico de la matriz con el nuevo objeto de asignatura:
-    $$\text{horarios.value[aula][dia][hora]} = \text{NuevaReserva}$$
-3.  **Eliminar (Delete)**: La función `eliminarReserva` establece el valor de un índice a `null`:
-    $$\text{horarios.value[aula][dia][hora]} = \text{null}$$
+```typescript
+// Desde GestorHorarios.vue
+function guardarReserva(payload) {
+    const aula = aulas.value.find(a => a.id === idAulaSeleccionada.value);
+    
+    if (aula) {
+        // Accede a la matriz usando los indices y asigna el objeto Asignatura
+        aula.horario[payload.indiceDia][payload.indiceBloque] = payload.reserva;
+    }
+}

@@ -25,10 +25,11 @@ export default defineUserConfig({
         ]
       },
             {
-        text: 'Lógica del Juego y Reglas',
+        text: 'Gestor de horarios y notificaciones',
         children: [
           '/guia/ejercicio3.md',
-          '/guia/ejercicio4.md'
+          '/guia/ejercicio4.md',
+          '/guia/ejercicio4-2.md'
         ]
       },
 

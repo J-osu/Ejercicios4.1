@@ -1,6 +1,6 @@
 <template><div><p>Clases Core y Modelado de Datos</p>
 <p>El juego se construye sobre dos clases fundamentales: la estructura de datos genérica (Pila) y el modelo de negocio (Carta).</p>
-<p>3.1 Clase Pila</p>
+<p>3.1 Clase Pila<T></p>
 <p>Implementa la estructura de datos Pila (Stack), esencial para simular la forma en que se roban y descartan las cartas (LIFO).</p>
 <p>Método: push(elemento: T)
 Descripción: Añade un elemento a la cima de la pila.</p>
