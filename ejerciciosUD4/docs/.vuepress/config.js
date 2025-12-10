@@ -23,7 +23,15 @@ export default defineUserConfig({
           '/guia/estado-y-composable.md',
           '/guia/reglas-y-flujo.md'
         ]
-      }
+      },
+            {
+        text: 'Lógica del Juego y Reglas',
+        children: [
+          '/guia/ejercicio3.md',
+          '/guia/ejercicio4.md'
+        ]
+      },
+
     ],
     nav: [
       { text: 'Ir al Componente (App)', link: '/' },
