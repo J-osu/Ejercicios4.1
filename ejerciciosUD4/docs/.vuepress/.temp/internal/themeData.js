@@ -1,0 +1,14 @@
+export const themeData = JSON.parse("{\"sidebar\":[{\"text\":\"Introducción\",\"children\":[\"/\"]},{\"text\":\"Lógica del Juego y Reglas\",\"children\":[\"/guia/arquitectura.md\",\"/guia/clases-y-datos.md\",\"/guia/estado-y-composable.md\",\"/guia/reglas-y-flujo.md\"]}],\"nav\":[{\"text\":\"Ir al Componente (App)\",\"link\":\"/\"},{\"text\":\"Clases Core\",\"link\":\"/guia/clases-y-datos.md\"}],\"locales\":{\"/\":{\"selectLanguageName\":\"English\"}},\"colorMode\":\"auto\",\"colorModeSwitch\":true,\"navbar\":[],\"logo\":null,\"repo\":null,\"selectLanguageText\":\"Languages\",\"selectLanguageAriaLabel\":\"Select language\",\"sidebarDepth\":2,\"editLink\":true,\"editLinkText\":\"Edit this page\",\"lastUpdated\":true,\"contributors\":true,\"contributorsText\":\"Contributors\",\"notFound\":[\"There's nothing here.\",\"How did we get here?\",\"That's a Four-Oh-Four.\",\"Looks like we've got some broken links.\"],\"backToHome\":\"Take me home\",\"openInNewWindow\":\"open in new window\",\"toggleColorMode\":\"toggle color mode\",\"toggleSidebar\":\"toggle sidebar\"}")
+
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.accept()
+  if (__VUE_HMR_RUNTIME__.updateThemeData) {
+    __VUE_HMR_RUNTIME__.updateThemeData(themeData)
+  }
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept(({ themeData }) => {
+    __VUE_HMR_RUNTIME__.updateThemeData(themeData)
+  })
+}
