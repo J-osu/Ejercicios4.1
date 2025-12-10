@@ -1,1 +1,0 @@
-export const siteData = JSON.parse("{\"base\":\"/docs/\",\"lang\":\"en-US\",\"title\":\"Simulador de Cartas con Pila\",\"description\":\"Documentación del proyecto \\\"El Último Descarte\\\" con Vue 3\",\"head\":[],\"locales\":{}}")
